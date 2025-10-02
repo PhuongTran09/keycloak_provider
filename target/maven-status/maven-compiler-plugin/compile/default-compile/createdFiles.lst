@@ -1,0 +1,4 @@
+com\keycloak_provider\dto\UserInfo.class
+com\keycloak_provider\adapter\CustomUserAdapter.class
+com\keycloak_provider\provider\DatabaseUserStorageProvider.class
+com\keycloak_provider\provider\DatabaseUserStorageProviderFactory.class
