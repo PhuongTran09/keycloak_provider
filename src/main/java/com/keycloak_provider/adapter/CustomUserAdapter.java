@@ -14,7 +14,7 @@ public class CustomUserAdapter extends AbstractUserAdapterFederatedStorage {
     private final String email;
     private final String firstName;
     private final String lastName;
-    private final String id;
+    private final Long dbId;
 
     public CustomUserAdapter(KeycloakSession session, RealmModel realm, ComponentModel model, UserInfo userInfo) {
         super(session, realm, model);
@@ -22,12 +22,12 @@ public class CustomUserAdapter extends AbstractUserAdapterFederatedStorage {
         this.email = userInfo.getEmail();
         this.firstName = userInfo.getFirstName();
         this.lastName = userInfo.getLastName();
-        this.id = StorageId.keycloakId(model, this.username);
+        this.dbId = userInfo.getId();
     }
 
     @Override
     public String getId() {
-        return this.id;
+        return String.valueOf(this.dbId);
     }
 
     @Override

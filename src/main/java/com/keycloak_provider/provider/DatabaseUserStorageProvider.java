@@ -152,6 +152,7 @@ public class DatabaseUserStorageProvider implements UserStorageProvider,
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new UserInfo(
+                        rs.getLong("id"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("first_name"),
@@ -209,6 +210,7 @@ public class DatabaseUserStorageProvider implements UserStorageProvider,
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 UserInfo userInfo = new UserInfo(
+                        rs.getLong("id"),
                         rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("first_name"),
@@ -224,27 +226,26 @@ public class DatabaseUserStorageProvider implements UserStorageProvider,
 
     @Override
     public UserModel addUser(RealmModel realm, String username) {
-
-        String sql = "INSERT INTO users (username) VALUES (?)";
+        String sql = "INSERT INTO users (username) VALUES (?) RETURNING id";
 
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, username);
-            int rows = stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery();
 
-            if (rows > 0) {
-                UserInfo userInfo = new UserInfo(username, null, null, null);
+            if (rs.next()) {
+                Long id = rs.getLong("id"); // lấy id vừa insert
+                UserInfo userInfo = new UserInfo(id, username, null, null, null);
                 logger.info("User '{}' successfully added to DB", username);
                 return new CustomUserAdapter(session, realm, model, userInfo);
             } else {
                 logger.warn("Failed to insert user '{}' into DB", username);
             }
-
         } catch (SQLException e) {
             logger.error("SQL error while adding user '{}': {}", username, e.getMessage(), e);
         }
         return null;
     }
+
 
     @Override
     public boolean removeUser(RealmModel realmModel, UserModel userModel) {
